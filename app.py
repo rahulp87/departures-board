@@ -42,7 +42,7 @@ OUTREACH_STATUS = ["not_started", "contacted", "followed_up", "replied", "stalle
 PRIORITY_OPTIONS = ["High", "Medium", "Low", "Stretch", ""]
 
 SHEETS = {
-    "leads": ["company", "title", "roleFamily", "country", "priority", "status", "postedDate", "url", "notes"],
+    "leads": ["company", "title", "roleFamily", "country", "priority", "status", "postedDate", "url", "applicationDate", "notes"],
     "applications": ["company", "title", "platform", "date", "contact", "status", "notes"],
     "companies": ["name", "category", "country", "notes", "portalUrl", "hiringManager", "skipLevel", "peer", "supporting", "outreachStatus"],
     "agencies": ["name", "recruiter", "linkedinUrl", "website", "status", "notes"],
