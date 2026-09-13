@@ -36,7 +36,7 @@ ROLE_FAMILIES = [
     "General / Corporate",
 ]
 
-LEAD_STATUS = ["pending", "needs_user", "skipped", "blocked", "submitted", "rejected"]
+LEAD_STATUS = ["pending", "applied", "rejected"]
 APP_STATUS = ["applied", "replied", "interview", "offer", "rejected", "closed"]
 OUTREACH_STATUS = ["not_started", "contacted", "followed_up", "replied", "stalled"]
 PRIORITY_OPTIONS = ["High", "Medium", "Low", "Stretch", ""]
@@ -132,6 +132,19 @@ def get_state_df(name):
 
 def refresh_state_df(name):
     st.session_state[state_key(name)] = load_df(name)
+
+
+def apply_status_rule(leads):
+    """A lead with a non-empty applicationDate is Applied, unless already marked Rejected."""
+    def resolve(row):
+        if row.get("status") == "rejected":
+            return "rejected"
+        if str(row.get("applicationDate", "")).strip():
+            return "applied"
+        return "pending"
+    leads = leads.copy()
+    leads["status"] = leads.apply(resolve, axis=1)
+    return leads
 
 
 # ---------------------------------------------------------------------------
@@ -346,9 +359,10 @@ with tab_leads:
                 **{f"contact{n}Date": f"C{n} Date" for n in CONTACT_SLOTS},
             },
         )
+        edited = apply_status_rule(edited)
+        st.session_state[state_key("leads")] = edited
         if st.button("💾 Save changes", key="save_leads"):
             save_df("leads", edited)
-            st.session_state[state_key("leads")] = edited
             st.success("Saved to Google Sheet.")
     else:
         st.dataframe(leads_df[leads_df["country"] == country_filter], use_container_width=True)
