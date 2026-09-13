@@ -41,8 +41,17 @@ APP_STATUS = ["applied", "replied", "interview", "offer", "rejected", "closed"]
 OUTREACH_STATUS = ["not_started", "contacted", "followed_up", "replied", "stalled"]
 PRIORITY_OPTIONS = ["High", "Medium", "Low", "Stretch", ""]
 
+CONTACT_CHANNELS = [
+    "", "LinkedIn InMail", "LinkedIn Message", "LinkedIn Connection Request",
+    "Personal Email", "Work Email", "Phone Call", "Text / WhatsApp", "Referral", "Other",
+]
+CONTACT_SLOTS = [1, 2, 3, 4, 5]
+CONTACT_COLUMNS = [
+    f"contact{n}{field}" for n in CONTACT_SLOTS for field in ("Name", "LinkedIn", "Email", "Mobile", "Date", "Channel")
+]
+
 SHEETS = {
-    "leads": ["company", "title", "roleFamily", "country", "priority", "status", "postedDate", "url", "applicationDate", "notes"],
+    "leads": ["company", "title", "roleFamily", "country", "priority", "status", "postedDate", "url", "applicationDate", "notes"] + CONTACT_COLUMNS,
     "applications": ["company", "title", "platform", "date", "contact", "status", "notes"],
     "companies": ["name", "category", "country", "notes", "portalUrl", "hiringManager", "skipLevel", "peer", "supporting", "outreachStatus"],
     "agencies": ["name", "recruiter", "linkedinUrl", "website", "status", "notes"],
@@ -323,6 +332,18 @@ with tab_leads:
                 "priority": st.column_config.SelectboxColumn(options=PRIORITY_OPTIONS),
                 "status": st.column_config.SelectboxColumn(options=LEAD_STATUS, required=True),
                 "url": st.column_config.LinkColumn(),
+                **{
+                    f"contact{n}LinkedIn": st.column_config.LinkColumn(f"C{n} LinkedIn")
+                    for n in CONTACT_SLOTS
+                },
+                **{
+                    f"contact{n}Channel": st.column_config.SelectboxColumn(f"C{n} Channel", options=CONTACT_CHANNELS)
+                    for n in CONTACT_SLOTS
+                },
+                **{f"contact{n}Name": f"C{n} Name" for n in CONTACT_SLOTS},
+                **{f"contact{n}Email": f"C{n} Email" for n in CONTACT_SLOTS},
+                **{f"contact{n}Mobile": f"C{n} Mobile" for n in CONTACT_SLOTS},
+                **{f"contact{n}Date": f"C{n} Date" for n in CONTACT_SLOTS},
             },
         )
         if st.button("💾 Save changes", key="save_leads"):
