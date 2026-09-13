@@ -36,7 +36,7 @@ ROLE_FAMILIES = [
     "General / Corporate",
 ]
 
-LEAD_STATUS = ["pending", "needs_user", "skipped", "blocked", "submitted"]
+LEAD_STATUS = ["pending", "needs_user", "skipped", "blocked", "submitted", "rejected"]
 APP_STATUS = ["applied", "replied", "interview", "offer", "rejected", "closed"]
 OUTREACH_STATUS = ["not_started", "contacted", "followed_up", "replied", "stalled"]
 PRIORITY_OPTIONS = ["High", "Medium", "Low", "Stretch", ""]
