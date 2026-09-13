@@ -5,6 +5,7 @@ Data lives in a Google Sheet (see README.md for setup). The AI "paste a job"
 extractor calls the Anthropic API directly using your own API key.
 """
 
+import base64
 import json
 from datetime import datetime
 
@@ -59,7 +60,15 @@ SCOPES = [
 
 @st.cache_resource(show_spinner=False)
 def get_spreadsheet():
-    creds = Credentials.from_service_account_info(dict(st.secrets["gcp_service_account"]), scopes=SCOPES)
+    # The service account key is stored as a base64 blob of its raw JSON
+    # (see README) rather than a nested TOML table: base64 has no quote
+    # characters, backslashes, or newlines for a copy/paste step to corrupt.
+    if "GCP_SERVICE_ACCOUNT_B64" in st.secrets:
+        raw = base64.b64decode(st.secrets["GCP_SERVICE_ACCOUNT_B64"])
+        info = json.loads(raw)
+    else:
+        info = dict(st.secrets["gcp_service_account"])
+    creds = Credentials.from_service_account_info(info, scopes=SCOPES)
     gc = gspread.authorize(creds)
     return gc.open_by_key(st.secrets["SPREADSHEET_ID"])
 
